@@ -1,4 +1,3 @@
 rootProject.name = "TableRichText"
 include ':app'
 include ':richhtml'
-include ':latexlibrary'
