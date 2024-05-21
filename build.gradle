@@ -1,16 +1,18 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
-    repositories {
-        google()
-        mavenCentral()
-        maven { url 'https://maven.aliyun.com/repository/google' }
-        maven { url 'https://maven.aliyun.com/repository/public' }
-        maven { url 'https://www.jitpack.io' }
-        maven { url 'https://repo1.maven.org/maven2' }
-        maven {url 'https://developer.huawei.com/repo/'}
-        maven { url "https://s01.oss.sonatype.org/content/groups/public" }
+    ext {
+        repo = {
+            maven {
+                url System.getenv('REPO_PULL')
+                credentials {
+                    username System.getenv('REPO_USER')
+                    password System.getenv('REPO_PASS')
+                }
+                authentication { basic(BasicAuthentication) }
+            }
+        }
     }
-
+    repositories repo
     dependencies {
         classpath 'com.android.tools.build:gradle:7.4.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.20"
@@ -18,21 +20,5 @@ buildscript {
 
     }
 }
-
-allprojects {
-    repositories {
-        google()
-        mavenCentral()
-        maven { url 'https://maven.aliyun.com/repository/google' }
-        maven { url 'https://maven.aliyun.com/repository/public' }
-        maven { url 'https://www.jitpack.io' }
-        maven { url 'https://repo1.maven.org/maven2' }
-        maven {url 'https://developer.huawei.com/repo/'}
-        maven { url "https://s01.oss.sonatype.org/content/groups/public" }
-
-    }
-}
-
-task clean(type: Delete) {
-    delete rootProject.buildDir
-}
+allprojects { repositories repo }
+tasks.register('clean', Delete) { delete rootProject.buildDir }
