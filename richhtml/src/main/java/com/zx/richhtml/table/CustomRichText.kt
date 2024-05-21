@@ -6,8 +6,13 @@ import android.text.Html
 import android.view.View
 import androidx.core.content.ContextCompat
 import com.zx.richhtml.formula.RichTextView
+import com.zx.richhtml.htmltext.HtmlImageLoader
+import com.zx.richhtml.htmltext.OnTagClickListener
 
-class CustomRichText(override val context: Context, public override val source: String) :
+class CustomRichText(
+    override val context: Context, public override val source: String,
+    private val imageLoader: HtmlImageLoader?, private val onTagClickListener: OnTagClickListener?,
+) :
     TypeRichView(context, source) {
 
     override fun getRenderView(
@@ -21,7 +26,7 @@ class CustomRichText(override val context: Context, public override val source: 
         mLaTexTextView.setTextColor(ContextCompat.getColor(
             context, textColor
         ))
-        mLaTexTextView.setMathText(source)
+        mLaTexTextView.setMathText(source, imageLoader, onTagClickListener)
         return mLaTexTextView
     }
 }

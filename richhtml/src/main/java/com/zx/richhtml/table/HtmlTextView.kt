@@ -8,6 +8,8 @@ import android.util.Log
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import com.zx.richhtml.R
+import com.zx.richhtml.htmltext.HtmlImageLoader
+import com.zx.richhtml.htmltext.OnTagClickListener
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -15,11 +17,13 @@ class HtmlTextView : LinearLayout {
     companion object {
         const val TAG = "HtmlTextView"
     }
+
     constructor(context: Context?, attrs: AttributeSet?, defStyle: Int) : super(
         context,
         attrs,
         defStyle
     )
+
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
 
     constructor(context: Context?) : super(context)
@@ -35,7 +39,9 @@ class HtmlTextView : LinearLayout {
         flags: Int,
         imageGetter: Html.ImageGetter?,
         tagHandler: Html.TagHandler?,
-        textColor: Int= R.color.black
+        textColor: Int = R.color.black,
+        imageLoader: HtmlImageLoader? = null,
+        onTagClickListener: OnTagClickListener? = null,
     ) {
         richList.clear()
         removeAllViews()
@@ -44,20 +50,30 @@ class HtmlTextView : LinearLayout {
         var start = 0
         while (tableMatcher.find()) {
             if (tableMatcher.start() == start) {
-                richList.add(TableRichText(context, source.substring(tableMatcher.start(), tableMatcher.end())))
+                richList.add(
+                    TableRichText(
+                        context,
+                        source.substring(tableMatcher.start(), tableMatcher.end())
+                    )
+                )
             } else {
-                richList.add(CustomRichText(context, source.substring(start, tableMatcher.start())))
-                richList.add(TableRichText(context, source.substring(tableMatcher.start(), tableMatcher.end())))
+                richList.add(CustomRichText(context, source.substring(start, tableMatcher.start()), imageLoader, onTagClickListener))
+                richList.add(
+                    TableRichText(
+                        context,
+                        source.substring(tableMatcher.start(), tableMatcher.end())
+                    )
+                )
             }
             start = tableMatcher.end()
         }
         if (start != source.length - 1) {
-            richList.add(CustomRichText(context, source.substring(start)))
+            richList.add(CustomRichText(context, source.substring(start), imageLoader, onTagClickListener))
         }
         richList.forEach {
             Log.d(TAG, "html=${it.source}")
             addView(
-                it.getRenderView(flags, imageGetter, tagHandler,textColor),
+                it.getRenderView(flags, imageGetter, tagHandler, textColor),
                 LayoutParams(LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
             )
         }
