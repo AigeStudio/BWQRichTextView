@@ -1,1 +1,2 @@
+-repackageclasses com.zx.richhtml
 -keep class com.zx.richhtml.** { public protected *; }
