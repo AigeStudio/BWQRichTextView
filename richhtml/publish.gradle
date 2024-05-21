@@ -1,0 +1,26 @@
+apply plugin: 'com.android.library'
+apply plugin: 'maven-publish'
+afterEvaluate {
+    publishing {
+        publications {
+            log(MavenPublication) {
+                final Properties properties = new Properties()
+                properties.load(project.rootProject.file("local.properties").newDataInputStream())
+                from components.release
+                groupId properties.getProperty('groupId')
+                artifactId properties.getProperty('artifactId')
+                version properties.getProperty('version')
+            }
+        }
+        repositories {
+            maven {
+                url System.getenv('REPO_PUSH')
+                credentials {
+                    username System.getenv('REPO_USER')
+                    password System.getenv('REPO_PASS')
+                }
+                authentication { basic(BasicAuthentication) }
+            }
+        }
+    }
+}
